@@ -1,0 +1,1497 @@
+openapi: 3.0.2
+
+info:
+  title: OGCAPI
+  version: 0.0.1
+  description: Implemations of OGC API
+  contact: 
+    email: kortxyz@gmail.com
+
+
+tags:
+  - name: Capabilities
+    description: essential characteristics of this API
+  - name: Features
+    description: Access data
+  - name: Tiles
+    description: Access tiles
+  - name: Styles
+    description: Access styles
+  - name: Maps
+    description: Access maps
+  - name: Resources
+    description: Access resources
+
+servers:
+  - url: 'https://localhost'
+
+
+paths:
+
+  /:
+    get:
+      operationId: getLandingpage
+      tags:
+        - Capabilities
+      summary: get Landingpage
+      description: >-
+        This resource represents an individual user in the system. Each user is
+        identified by a numeric `id`.
+      parameters:
+        - $ref: '#/components/parameters/fCommon'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/landingpage'
+            html/text:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /conformance:
+    get:
+      operationId: getConformance
+      tags:
+        - Capabilities
+      summary: conformance declaration
+      description: >-
+        The URIs of all conformance classes supported by the server. This
+        information is provided to support 'generic' clients that want to access
+        multiple OGC API implementations - and not 'just' a specific API. For
+        clients accessing only a single API, this information is in general not
+        relevant and the OpenAPI definition details the required information
+        about the API.
+      parameters:
+        - $ref: '#/components/parameters/fCommon'
+      responses:
+        '200':
+          description: The operation was executed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conformanceDeclaration'
+              example:
+                conformsTo:
+                - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core
+                - http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections
+                - http://www.opengis.net/spec/ogcapi-features-1/1.1/conf/oas30
+                - http://www.opengis.net/spec/ogcapi-features-1/1.1/conf/html
+                - http://www.opengis.net/spec/ogcapi-features-1/1.1/conf/geojson
+                - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset
+                - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets
+                - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/dataset
+                - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata
+                - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tmxs
+                - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/info
+            text/html:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+ 
+  /download:
+    get:
+      operationId: getEnclosure
+      tags:
+        - Features
+      summary: get dataset
+      description: download dataset behind the API
+      responses:
+        '200':
+          description: the dataset
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections:
+    get:
+      operationId: getCollections
+      tags:
+        - Capabilities
+      summary: get collections
+      description: Show an overview of collections available in the dataset.
+      parameters:
+        - $ref: '#/components/parameters/fCommon'
+      responses:
+        '200':
+          description: collections metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collections'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}:
+    get:
+      operationId: getCollection
+      tags:
+        - Capabilities
+      summary: get collection metadata
+      description: Show details about a collection available in the dataset.
+      parameters:
+        - $ref: '#/components/parameters/fCommon'
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: collections metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collectionDesc'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}/items:
+    get:
+      operationId: getItems
+      tags:
+        - Features
+      summary: get Items
+      description: Fetch items in a collections as geojson.
+      parameters:
+        - $ref: '#/components/parameters/fCommon'
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/bbox'
+      responses:
+        '200':
+          description: collections metadata
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/featureCollectionGeoJSON'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}/items/{featureId}:
+    get:
+      operationId: getItem
+      tags:
+        - Features
+      summary: get Item
+      description: Fetch items in a collections as geojson.
+      parameters:
+        - $ref: '#/components/parameters/fCommon'
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/featureId'
+      responses:
+        '200':
+          description: collections metadata
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/featureCollectionGeoJSON'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}/tiles:
+    get:
+      operationId: getSingleLayerTilesDesc
+      tags:
+        - Tiles
+      summary: get tiles description
+      description: Retrieves the tiles description for this collection including the links to get a tile, the TileMatrixSetLink.
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: items as vectortile
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}/tiles/{tileMatrixSetId}:
+    get:
+      operationId: getSingleLayerTileJSON
+      tags:
+      - Tiles
+      summary: fetch a tiles description
+      description: Retrieves the tiles description for this collection including the
+        `links` to get a `tile`
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+      responses:
+        "200":
+          description: Description of the tiles.
+          content:
+            application/json:
+              $ref: '#/components/schemas/tileJSON'
+
+  /collections/{collectionId}/tiles/{tileMatrixSetId}/{z}/{x}/{y}:
+    get:
+      operationId: getSingleLayerTile
+      tags:
+        - Tiles
+      summary: get tile
+      description: Fetch items as vectortiles.
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/z'
+        - $ref: '#/components/parameters/x'
+        - $ref: '#/components/parameters/y'
+      responses:
+        '200':
+          description: items as vectortile
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}/styles:
+    get:
+      operationId: getCollectionStyles
+      tags:
+        - Styles
+      summary: get collection styles
+      description: Fetch available styles for the collection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: Stylelist
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /collections/{collectionId}/styles/{styleId}:
+    get:
+      operationId: getCollectionStyle
+      tags:
+        - Styles
+      summary: get collection style
+      description: Fetch a specific style for the collection.
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '200':
+          description: stylespec
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+ 
+  /collections/{collectionId}/styles/{styleId}/map:
+    get:
+      operationId: getCollectionMap
+      tags:
+        - Maps
+      summary: get rendered map
+      description: get a rendered version of the dataset based on the default style. json format may be called to get metadata of the map.
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/fImage'      
+      responses:
+        '204':
+          description: style deleted
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /tileMatrixSets:
+    get:
+      operationId: getTileMatrixsets
+      tags:
+        - Tiles
+      summary: get a list of available tilingschemes
+      description: download dataset behind the API
+      responses:
+        '200':
+          $ref: '#/components/schemas/TileMatrixSets'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /tileMatrixSets/{tileMatrixSetId}:
+    get:
+      operationId: getTileMatrix
+      tags:
+        - Tiles
+      summary: get metadata about a single tilingscheme 
+      description: download dataset behind the API
+      parameters:
+        - $ref: '#/components/parameters/tileMatrixSetId'
+      responses:
+        '200':
+          $ref: '#/components/schemas/TileMatrixSet'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /tiles:
+    get:
+      operationId: getMultiLayerTilesDesc
+      tags:
+      - Tiles
+      summary: fetch a tiles description
+      description: Retrieves the tiles description for this collection including the
+        `links` to get a `tile`
+      responses:
+        "200":
+          description: Description of the tiles.
+          content:
+            application/json:
+              schema:
+                required:
+                - links
+                type: object
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  tileMatrixSetLinks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tileMatrixSet:
+                          type: string
+                        tileMatrixSetURI:
+                          type: string
+                        tileMatrixSetDefinition:
+                          type: string
+                  links:
+                    type: array
+                    example:
+                    - href: http://data.example.com/tiles
+                      rel: self
+                      type: application/json
+                    - href: http://data.example.com/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}.png
+                      templated: true
+                      rel: item
+                      type: image/png
+                    - href: http://data.example.com/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info
+                      templated: true
+                      rel: info
+                      type: text/html
+                    items:
+                      $ref: '#/components/schemas/link'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /tiles/{tileMatrixSetId}:
+    get:
+      operationId: getMultiLayerTileJSON
+      tags:
+      - Tiles
+      summary: fetch a tiles description
+      description: Retrieves the tiles description for this collection including the
+        `links` to get a `tile`
+      parameters:
+        - $ref: '#/components/parameters/tileMatrixSetId'
+      responses:
+        "200":
+          description: Description of the tiles.
+          content:
+            application/json:
+              $ref: '#/components/schemas/tileJSON'
+
+  /tiles/{tileMatrixSetId}/{z}/{x}/{y}:
+    get:
+      operationId: getMultilayerTile
+      tags:
+        - Tiles
+      summary: fetch a tile from one or more geospatial data resources
+      description: Retrieves a tile in the requested tileMatrixSet, on the requested
+        tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow,
+        tileCol). The tile has multiple collections (formerly refered as layers) with
+        all selected features in the bounding box of the tile.
+      parameters:
+        - $ref: '#/components/parameters/tileMatrixSetId'
+        - $ref: '#/components/parameters/z'
+        - $ref: '#/components/parameters/x'
+        - $ref: '#/components/parameters/y'
+      responses:
+        '200':
+          description: items as vectortile
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /styles:
+    get:
+      tags:
+        - Styles
+      summary: get styles for the dataset
+      description: get a list of available styles for the dataset. Styles are discriptions of how data in the collections should be rendered.
+      operationId: getStyles
+      responses:
+        '200':
+          description: available styles
+          content:
+            application/json:
+              schema:
+                required:
+                - styles
+                - links
+                type: object
+                properties:
+                  links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/link'
+                  styles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/style'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'    
+    post:
+      operationId: postStyle
+      tags:
+        - Styles
+      summary: post styles for the dataset
+      description: get a list of available styles for the dataset. Styles are discriptions of how data in the collections should be rendered.
+      requestBody:
+        description: Stylesheet to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/mb-style' 
+      responses:
+        '201':
+          description: style created
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+
+  /styles/{styleId}:
+    get:
+      operationId: getStyle
+      tags:
+        - Styles
+      summary: fetch a style by id
+      description:  |-
+        Fetches the style with identifier `styleId`. The set of 
+        available styles can be retrieved at `/styles`.
+        Not all styles are available in all style encodings.
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/fStyle'
+      responses:
+        '200':
+          description: The style
+          content:
+            application/vnd.mapbox.style+json:
+              schema:
+                $ref: '#/components/schemas/mb-style'
+            text/html:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      operationId: putStyle
+      tags:
+        - Styles
+      summary: update a style by id
+      description:  |-
+        update the style with identifier `styleId`. The set of 
+        available styles can be retrieved at `/styles`.
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '200':
+          description: style updated
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'          
+    delete:
+      operationId: deleteStyle
+      tags:
+        - Styles
+      summary: delete a style by id
+      description:  |-
+        Fetches the style with identifier `styleId`. The set of 
+        available styles can be retrieved at `/styles`.
+    
+        Not all styles are available in all style encodings.
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '204':
+          description: style deleted
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /styles/{styleId}/metadata:
+    get:
+      operationId: getStyleMetadata
+      tags:
+        - Styles
+      summary: fetch metadata about a style
+      description:  |-
+        Fetches metadata about the style with identifier `styleId`.
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/fCommon'
+      responses:
+        '200':
+          description: The styles metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/styleMetadata'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError' 
+
+  /styles/{styleId}/map:
+    get:
+      operationId: getMap
+      tags:
+        - Maps
+      summary: get rendered map
+      description: get a rendered version of the dataset based on the default style. json format may be called to get metadata of the map.
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/height'
+        - $ref: '#/components/parameters/width'
+        - $ref: '#/components/parameters/fImage'      
+      responses:
+        '200':
+          description: a rendered map
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  
+  /resources/fonts/{fontstack}/{range}:
+    get:
+      operationId: getFonts
+      tags:
+        - Resources
+      summary: get fonts
+      description: get fonts to using in style
+      parameters:
+        - $ref: '#/components/parameters/fontstack'
+        - $ref: '#/components/parameters/range'
+      responses:
+        '200':
+          description: a font in the specified range
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '500':
+          $ref: '#/components/responses/ServerError'
+       
+
+   
+components:
+
+  schemas:
+
+    htmlSchema:
+      type: string
+      example: <html>...</html>
+   
+    landingpage:
+      required:
+        - links
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+            
+    conformanceDeclaration:
+      description: |-
+        The URIs of all conformance classes supported by the server.
+
+        To support "generic" clients that want to access multiple
+        OGC API Features implementations - and not "just" a specific
+        API / server, the server declares the conformance
+        classes it implements and conforms to.
+      
+    link:
+      required:
+        - href
+      type: object
+      properties:
+        rel:
+          type: string
+          example: data
+        type:
+          type: string
+          example: application/geo+json
+        title:
+          type: string
+          example: 'Trierer Strasse 70, 53115 Bonn'
+        href:
+          type: string
+          example: 'http://data.example.com/buildings/123'
+        templated:
+          type: boolean
+          example: false
+
+    exception:
+      type: object
+      description: >-
+        Information about the exception. an error code plus an optional
+        description.
+      required:
+        - statusCode
+        - error
+      properties:
+        statusCode:
+          type: integer
+        code:
+          type: string
+        error:
+          type: string
+        message:
+          type: string
+
+    collections:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        collections:
+          type: array
+          items:
+            $ref: '#/components/schemas/collectionDesc'
+
+    collectionDesc:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        extent:
+          type: object
+          properties:
+            spatial:
+              type: array
+              items:
+                type: number
+            temporal:
+              type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+    
+    TileMatrixSets:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        tileMatrixSets:
+          type: array
+          items:
+            type: object
+            properties:
+              title: 
+                type: string
+              id:
+                type: string
+              links:
+                type: array
+                items:
+                  $ref: '#/components/schemas/link'
+
+    TileMatrixSet:
+      type: object
+      properties:
+        identifier:
+          type: string
+        title:
+          type: string
+        links: 
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        type:
+          type: string
+          enum:
+            - TileMatrixSetType
+        supportedCRS:
+          type: string
+        wellKnownScaleSet:
+          type: string
+        boundingBox:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - "BoundingBoxType"
+              lowerCorner:
+                type: array
+                items:
+                  type: number
+              upperCorner:
+                type: array
+                items:
+                  type: number
+        tileMatrix:
+          type: array
+          items:
+            $ref: '#/components/schemas/tileMatrix'
+
+    tileMatrix:
+      type: array
+      items:
+        required:
+        - identifier
+        - tileWidth
+        - tileHeight
+        - matrixWidth
+        - matrixHeight
+        - scaleDenominator
+        - topLeftCorner
+        - type
+        type: object
+        properties:
+          identifier:
+            type: string
+          tileWidth:
+            type: integer
+          tileHeight:
+            type: integer
+          matrixWidth:
+            type: integer
+          matrixHeight:
+            type: integer
+          scaleDenominator:
+            type: number
+          topLeftCorner:
+            type: array
+            items:
+              type: number
+          type:
+            type: string
+            enum:
+              - "TileMatrixType"
+
+    tileJSON:
+      type: object
+      properties:
+        tilejson:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        tiles:
+          type: array
+          items:
+            type: string
+        vector_layers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              fields:
+                type: object
+                additionalProperties:
+                  type: string
+              description:
+                type: string
+              maxzoom:
+                type: integer
+              minzoom:
+                type: integer
+            required:
+            - id
+            - fields
+            additionalProperties: true
+        attribution:
+          type: string
+        bounds:
+          type: array
+          items:
+            type: number
+        center:
+          type: array
+          items:
+            type: number
+        data:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        fillzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        grids:
+          type: array
+          items:
+            type: string
+        legend:
+          type: string
+        maxzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        minzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        name:
+          type: string
+        scheme:
+          type: string
+        template:
+          type: string
+        version:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+      required:
+      - tilejson
+      - tiles
+      - vector_layers
+
+    style:
+      type: object
+      required:
+        - id
+        - links
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+    
+    styleMetadata:
+      type: object
+      required:
+        - id
+        - links
+        - stylesheets
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        pointOfContact:
+          type: string
+        accessConstraints:
+          type: string
+        scope:
+          type: string
+        version:
+          type: string            
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        stylesheets:
+          type: array
+          items:
+            $ref: '#/components/schemas/stylesheets'
+        layers:
+          type: array
+          items:
+            type: object
+    
+    stylesheets:
+      type: object
+      required:
+        - link
+      properties:
+        title:
+          type: string
+        version:
+          type: string
+        specification:
+          type: string
+          format: url
+        native:
+          type: boolean
+        tilingScheme:
+          type: string
+        link:
+          $ref: '#/components/schemas/link'
+
+    mb-style:
+      type: object
+      required:
+        - name
+        - layers
+        - sources
+        - version
+      properties:
+        name:
+          type: string
+          example: "topoMap"
+        version:
+          type: number
+          enum: 
+            - 8
+        sprite:
+          type: string
+          example: "mapbox://sprites/mapbox/bright-v8"
+        glyphs:
+          type: string
+          example: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf"
+        sources:
+          type: object
+          example: 
+            daraa:
+              type: vector
+              tiles:
+                - "http://a.example.com/tiles/{z}/{x}/{y}.pbf"
+              maxzoom: 14
+        layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/layers-array'
+
+    layers-array:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+          example: 'vegation'
+        type:
+          type: string
+          example: fill
+          enum:
+            - fill
+            - line
+            - symbol
+            - circle
+            - heatmap
+            - fill-extrusion
+            - raster
+            - hillshade
+            - background
+        source:
+          type: string
+          example: daraa
+        source-layer:
+          type: string
+          example: vegetationsrf
+        layout:
+          type: object
+        paint:
+          type: object
+
+    featureCollectionGeoJSON:
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/featureGeoJSON'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/link'
+        timeStamp:
+          $ref: '#/components/schemas/timeStamp'
+        numberTotal:
+          $ref: '#/components/schemas/numberMatched'
+        numberReturned:
+          $ref: '#/components/schemas/numberReturned'
+          
+    featureGeoJSON:
+      type: object
+      required:
+        - type
+        - geometry
+        - properties
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          $ref: '#/components/schemas/geometryGeoJSON'
+        properties:
+          type: object
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+
+    geometryGeoJSON:
+      oneOf:
+        - $ref: '#/components/schemas/pointGeoJSON'
+        - $ref: '#/components/schemas/multipointGeoJSON'
+        - $ref: '#/components/schemas/linestringGeoJSON'
+        - $ref: '#/components/schemas/multilinestringGeoJSON'
+        - $ref: '#/components/schemas/polygonGeoJSON'
+        - $ref: '#/components/schemas/multipolygonGeoJSON'
+
+    linestringGeoJSON:
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - LineString
+        coordinates:
+          type: array
+          minItems: 2
+          items:
+            type: array
+            minItems: 2
+            items:
+              type: number
+
+    multilinestringGeoJSON:
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - MultiLineString
+        coordinates:
+          type: array
+          items:
+            type: array
+            minItems: 2
+            items:
+              type: array
+              minItems: 2
+              items:
+                type: number
+
+    multipointGeoJSON:
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - MultiPoint
+        coordinates:
+          type: array
+          items:
+            type: array
+            minItems: 2
+            items:
+              type: number
+
+    multipolygonGeoJSON:
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - MultiPolygon
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              minItems: 4
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: number
+
+    pointGeoJSON:
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+        coordinates:
+          type: array
+          minItems: 2
+          items:
+            type: number
+    
+    polygonGeoJSON:
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Polygon
+        coordinates:
+          type: array
+          items:
+            type: array
+            minItems: 4
+            items:
+              type: array
+              minItems: 2
+              items:
+                type: number
+    
+    numberMatched:
+      description: |-
+        The number of features of the feature type that match the selection
+        parameters like `bbox`.
+      type: integer
+      minimum: 0
+      example: 127
+    
+    numberReturned:
+      description: |-
+        The number of features in the feature collection.
+
+        A server may omit this information in a response, if the information
+        about the number of features is not known or difficult to compute.
+
+        If the value is provided, the value shall be identical to the number
+        of items in the "features" array.
+      type: integer
+      minimum: 0
+      example: 10
+
+    timeStamp:
+      description: >-
+        This property indicates the time and date when the response was
+        generated.
+      type: string
+      format: date-time
+      example: '2017-08-17T08:05:32Z'
+
+  parameters:
+  
+    fCommon:
+      name: f
+      in: query
+      description: >-
+        Select the output format of the response. If no value is provided, the
+        standard HTTP rules apply, i.e., the accept header will be used to
+        determine the format.
+      required: false
+      schema:
+        type: string
+        enum:
+          - json
+          - html
+
+    fStyle:
+      name: f
+      in: query
+      description: >-
+        Select the output format of the response. If no value is provided, the
+        standard HTTP rules apply, i.e., the accept header will be used to
+        determine the format.
+      required: false
+      schema:
+        type: string
+        enum:
+          - mapbox
+          - html
+
+    fImage:
+      name: f
+      in: query
+      description: >-
+        Select the output format of the response. If no value is provided, the
+        standard HTTP rules apply, i.e., the accept header will be used to
+        determine the format.
+      required: false
+      schema:
+        type: string
+        enum:
+          - mapbox
+          - html
+
+    styleId:
+      name: styleId
+      in: path
+      description: local identifier of a style
+      required: true
+      schema:
+        type: string  
+
+    tileMatrixSetId:
+      name: tileMatrixSetId
+      in: path
+      description: local identifier of a tileMatrixSet
+      required: true
+      schema:
+        type: string
+
+    collectionId:
+      name: collectionId
+      in: path
+      description: local identifier of a collection
+      required: true
+      schema:
+        type: string
+
+    featureId:
+      name: featureId
+      in: path
+      description: id of the requested feature in the colleciton
+      required: true
+      schema:
+        type: integer
+
+    limit:
+      name: limit
+      in: query
+      description: >-
+        The optional limit parameter limits the number of items that are
+        presented in the response document.
+
+
+        Only items are counted that are on the first level of the collection in
+        the response document.
+
+        Nested objects contained within the explicitly requested items shall not
+        be counted.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 999999
+        default: 10
+
+    offset:
+      name: offset
+      in: query
+      description: >-
+        The optional offset parameter offset the number of items that are
+        presented in the response document.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 999999
+        default: 0
+
+    bbox:
+      name: bbox
+      in: query
+      schema:
+        type: array
+        items: 
+          type: number
+
+    width:
+      name: width
+      in: query
+      schema:
+        type: integer
+
+    height:
+      name: height
+      in: query
+      schema:
+        type: integer
+
+    z:
+      name: z
+      in: path
+      description: zoomlevel in tile request
+      required: true
+      schema:
+        type: integer
+      example: 7
+
+    x:
+      name: x
+      in: path
+      description: x/row coodinates in tile request
+      required: true
+      schema:
+        type: integer
+      example: 11
+
+    y:
+      name: y
+      in: path
+      description: y/col coodinates in tile request
+      required: true
+      schema:
+        type: integer
+      example: 25
+
+    fontstack:
+      name: fontstack
+      in: path
+      description: name of the font
+      required: true
+      schema:
+        type: string
+      example: Open Sans Extra Bold
+
+    range:
+      name: range
+      in: path
+      description: range in the fontstack
+      required: true
+      schema:
+        type: string
+      example: 512-767
+
+  responses:
+ 
+    InvalidParameter:
+      description: A query parameter has an invalid value.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'
+
+    NotFound:
+      description: >-
+        The requested resource does not exist on the server. For example, a path
+        parameter had an incorrect value.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'
+
+    NotAcceptable:
+      description: >-
+        Content negotiation failed. For example, the `Accept` header submitted
+        in the request did not support any of the media types supported by the
+        server for the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'
+
+    ServerError:
+      description: A server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/exception'

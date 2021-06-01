@@ -1,0 +1,304 @@
+<html>
+
+<head>
+	<script src='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.css' rel='stylesheet' />
+	<script src='https://unpkg.com/@turf/turf@6.3.0/turf.min.js'></script>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+	<style>
+		body:before {
+			content: '';
+			position: absolute;
+			display: none;
+			background: orange;
+			width: 10%;
+			height: 2px;
+			z-index: 99999;
+			animation: progress 1s infinite;
+		}
+
+		body.loading::before {
+			display: block;
+		}
+
+		@keyframes progress {
+			from {
+				width: 0;
+			}
+
+			to {
+				width: 100%;
+			}
+		}
+
+		infobox {
+			display: grid;
+			grid: auto/auto auto;
+			grid-column-gap: 5px;
+			max-height: 60vh;
+			overflow: auto;
+			user-select: text;
+		}
+
+		infobox>div:nth-child(2n-1) {
+			font-weight: bold;
+			justify-self: end;
+		}
+
+		infobox>div:nth-child(2n) {
+			max-width: 30vw;
+		}
+	</style>
+	<style>
+		* {
+			font-family: 'Roboto Mono', monospace;
+		}
+
+		body {
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			margin: 0;
+		}
+
+		.top {
+			display: flex;
+			justify-content: space-between;
+			color: rgb(163, 163, 163);
+			padding: 0 10px 0 10px;
+			flex: 40px 0 0;
+			align-items: center;
+		}
+
+		.breadcrumbs {
+			font-size: 14px;
+			letter-spacing: 0.025rem;
+		}
+
+		.breadcrumbs a {
+			color: inherit;
+			text-decoration: none;
+			text-transform: capitalize;
+		}
+
+		.breadcrumbs a:hover {
+			color: rgb(62, 179, 166);
+		}
+
+		.breadcrumbs a:hover:after {
+			color: rgb(62, 179, 166);
+		}
+
+		.breadcrumbs a:after {
+			content: '>';
+			padding: 0 0.5rem;
+			display: inline-block;
+		}
+
+		.breadcrumbs span {
+			color: black;
+			cursor: pointer;
+			text-transform: capitalize;
+		}
+
+		.json {
+			cursor: pointer;
+			font-family: 'Roboto Mono', monospace;
+			font-size: 14px;
+			letter-spacing: 0.025rem;
+			text-decoration: none;
+			color: rgb(163, 163, 163)
+		}
+
+		.json:hover {
+			color: rgb(62, 179, 166);
+
+		}
+	</style>
+	    <style>
+			.content {
+				flex: 1;
+			}
+		</style>
+</head>
+
+<body style="margin:0;">
+	<div class="top">
+		<div class="breadcrumbs">
+			<a href="${baseurl}">Home</a><a href="${baseurl}/collections">Collections</a><a href="${baseurl}/collections/${collectionId}">${collectionId}</a><a href="${baseurl}/collections/${collectionId}/items">Items</a><span>${featureId}</span>
+        </div>
+        <a class="json" href="?f=json">GeoJSON</a>
+    </div>
+    <div class="content" >
+		<div id='map' class="loading" style='width: 100%; height: 100%;'></div>
+    </div>
+
+	<script>
+		(async () => {
+			document.body.classList.add("loading")
+
+			let url = new URL(location.href);
+			url.searchParams.delete('f');
+			url.searchParams.set('f', 'json');
+
+			const geojson = await fetch(url).then(e => e.json())
+
+
+			map.getSource("items").setData(geojson)
+			document.body.classList.remove("loading")
+			map.fitBounds(turf.bbox(geojson))
+		})();
+	</script>
+	<script>
+
+		var map = new mapboxgl.Map({
+			container: 'map',
+			style:
+			{
+				"version": 8,
+				"name": "Empty",
+				"metadata": {
+					"mapbox:autocomposite": true,
+					"mapbox:type": "template"
+				},
+				"glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+				"sources": {
+					'sat-tiles': {
+						'type': 'raster',
+						'tiles': [
+							'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/g/{z}/{y}/{x}.jpg',
+						],
+						"scheme": "xyz",
+						'tileSize': 256,
+						"maxzoom": 14
+					},
+					items: {
+						type: 'geojson',
+						data: { type: 'FeatureCollection', features: [] }
+					}
+				},
+				"layers": [
+					{
+						'id': 'sat-tiles',
+						'type': 'raster',
+						'source': 'sat-tiles',
+						'paint': {
+							'raster-saturation': -0.8,
+						}
+					},
+					{
+						"id": "items-Point",
+						"type": "circle",
+						"source": "items",
+						'filter': ["==", "$type", "Point"],
+						"paint": {
+							"circle-color": "red",
+							'circle-radius': 2.5,
+							'circle-opacity': ["case", ["boolean", ["feature-state", "hover"], false], 0.8, 0.4],
+						},
+						"layout": {},
+					},
+					{
+						"id": "items-LineString",
+						"type": "line",
+						"source": "items",
+						'filter': ["==", "$type", "LineString"],
+						"paint": {
+							"line-color": "red",
+							"line-width": 3,
+							'line-opacity': ["case", ["boolean", ["feature-state", "hover"], false], 0.8, 0.4],
+
+						},
+						"layout": {},
+					},
+					{
+						"id": "items-Polygon",
+						"type": "fill",
+						"source": "items",
+						'filter': ["==", "$type", "Polygon"],
+						"paint": {
+							"fill-color": "red",
+							'fill-opacity': ["case", ["boolean", ["feature-state", "hover"], false], 0.8, 0.4],
+
+						},
+						"layout": {},
+					},
+					{
+						'id': 'items-polygons-outline',
+						'type': 'line',
+						'source': 'items',
+						'filter': ["==", "$type", "Polygon"],
+						'layout': {
+							'line-join': 'round',
+							'line-cap': 'round'
+						},
+						'paint': {
+							'line-color': "red",
+							'line-width': 1,
+							'line-opacity': 0.75
+						}
+					}
+
+				]
+			}, // stylesheet location'
+			center: [0, 0], // starting position [lng, lat]
+			zoom: 4, // starting zoom
+			maxZoom: 16
+		});
+
+		map.on('click', e => {
+			var features = this.map.queryRenderedFeatures(e.point);
+			if (features.length > 0) {
+				popup.setLngLat(e.lngLat)
+					.setHTML(this.renderPopup(features))
+					.addTo(this.map);
+			}
+			else {
+				popup.remove();
+			}
+		})
+
+		map.on('mousemove', e => {
+			var features = this.map.queryRenderedFeatures(e.point);
+			this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+			if (features.length > 0 && features[0].id) { /*Find en måde at understøtte features uden ID fx fra OGR2OGR. this.hover.id.includes(features[0].layer.id)*/
+				if (this.hover) this.map.setFeatureState({ source: this.hover.layer.source, sourceLayer: this.hover.layer["source-layer"], id: this.hover.id }, { hover: false });
+				this.hover = { id: features[0].id, layer: features[0].layer };
+				this.map.setFeatureState({ source: this.hover.layer.source, sourceLayer: this.hover.layer["source-layer"], id: this.hover.id }, { hover: true });
+			}
+			else {
+				if (this.hover) this.map.setFeatureState({ source: this.hover.layer.source, sourceLayer: this.hover.layer["source-layer"], id: this.hover.id }, { hover: false });
+				this.hover = null;
+			}
+
+		});
+
+
+
+		const popup = new mapboxgl.Popup({
+			closeButton: false,
+			maxWidth: 'none'
+		});
+
+		function renderPopup(features) {
+			const feature = features[0];
+			const infobox = document.createElement("infobox");
+
+			Object.entries(feature.properties).forEach(property => {
+				property.forEach(e => {
+					const div = document.createElement("div");
+					div.innerText = e;
+					infobox.appendChild(div);
+				})
+			})
+			console.log(infobox)
+			return infobox.outerHTML
+		}
+
+	</script>
+</body>
+
+</html>

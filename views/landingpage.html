@@ -1,0 +1,122 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            color: rgb(163, 163, 163);
+            padding: 0 10px 0 10px;
+            flex: 40px 0 0;
+            align-items: center;
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            letter-spacing: 0.025rem;
+        }
+
+        .breadcrumbs a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            color: rgb(62, 179, 166);
+        }
+
+        .breadcrumbs a:hover:after {
+            color: rgb(62, 179, 166);
+        }
+
+        .breadcrumbs a:after {
+            content: '>';
+            padding: 0 0.5rem;
+            display: inline-block;
+        }
+
+        .breadcrumbs span {
+            color: black;
+            cursor: pointer;
+            text-transform: capitalize;
+        }
+
+        .json {
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 0.025rem;
+            text-decoration: none;
+            color: rgb(163, 163, 163)
+        }
+
+        .json:hover {
+            color: rgb(62, 179, 166);
+
+        }
+    </style>
+    <style>
+        .content {
+            flex: 1;
+            display: grid;
+            grid-template-areas:
+                'collections collections collections api api'
+                'styles styles tiles tiles tiles'
+                'styles styles tilematrixsets tilematrixsets tilematrixsets';
+        }
+        .item1 { grid-area: collections; background: url("https://picsum.photos/300/100?random=1") left top / cover no-repeat;  }
+        .item2 { grid-area: styles; background: url("https://picsum.photos/200/200?random=2") left top / cover no-repeat;}
+        .item3 { grid-area: tiles; background: url("https://picsum.photos/300/100?random=3") left top / cover no-repeat;}
+        .item4 { grid-area: tilematrixsets; background: url("https://picsum.photos/300/100?random=4") left top / cover no-repeat;}
+        .item5 { grid-area: api; background: url("https://picsum.photos/200/100?random=5") left top / cover no-repeat;}
+
+        .content>a {
+            text-align: center;
+            font-size: 30px;
+            filter: grayscale(80%);
+            color:white;
+            text-shadow: 0 0 4px black;
+            cursor: pointer;
+            user-select: none;
+            text-decoration: none;
+            padding-top:10px;
+        }
+        .content>a:hover {
+            filter: grayscale(100%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <div class="breadcrumbs"><span>Home</span>
+        </div>
+        <a class="json" href="?f=json">JSON</a>
+    </div>
+    <div class="content">
+        <a class="item1" href="./collections">Collections</a>
+        <a class="item2" href="./styles">Styles</a>
+        <a class="item3" href="./tiles">Tiles</a>
+        <a class="item4" href="./tilematrixsets">TileMatrixSets</a>
+        <a class="item5" href="./api">Api</a>
+    </div>
+
+
+
+</body>
+
+</html>

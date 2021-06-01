@@ -1,0 +1,98 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Roboto Mono', monospace;
+        }
+        body{
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .top {
+            display: flex;
+            justify-content: space-between;
+            color: rgb(163, 163, 163);
+            padding: 0 10px 0 10px;
+            flex: 40px 0 0;
+            align-items: center;
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            letter-spacing: 0.025rem;
+        }
+
+        .breadcrumbs a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            color: rgb(62, 179, 166);
+        }
+
+        .breadcrumbs a:hover:after {
+            color: rgb(62, 179, 166);
+        }
+
+        .breadcrumbs a:after {
+            content: '>';
+            padding: 0 0.5rem;
+            display: inline-block;
+        }
+
+        .breadcrumbs span {
+            color: black;
+            cursor: pointer;
+            text-transform: capitalize;
+        }
+
+        .json {
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 0.025rem;
+            text-decoration: none;
+            color: rgb(163, 163, 163)
+        }
+
+        .json:hover {
+            color: rgb(62, 179, 166);
+
+        }
+    </style>
+    <style>
+        .content {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
+        @media only screen and (max-width: 1000px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <div class="breadcrumbs"><a href="../">Home</a><span>Maps</span>
+        </div>
+        <a class="json" href="?f=json">JSON</a>
+    </div>
+    <div class="content" >
+
+    </div>
+
+
+
+</body>
+
+</html>

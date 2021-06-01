@@ -1,0 +1,44 @@
+{
+  "name": "ogcapi-spatialite",
+  "version": "0.1.3",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js --ignore datastore.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pkg": "pkg . & copyfiles schema.yaml mod_spatialite.dll dist & copyfiles -u 4 ./node_modules/better-sqlite3/build/Release/better_sqlite3.node dist & copyfiles -u 2 ./node_modules/puppeteer/.local-chromium/**/**/**  dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mapbox/sphericalmercator": "^1.1.0",
+    "better-sqlite3": "^7.3.1",
+    "dotenv": "^8.2.0",
+    "express-es6-template-engine": "^2.2.3",
+    "fastify": "^3.15.0",
+    "fastify-caching": "^6.1.0",
+    "fastify-cors": "^6.0.1",
+    "fastify-plugin": "^3.0.0",
+    "fastify-swagger": "^4.7.0",
+    "geojson-vt": "^3.2.1",
+    "js-yaml": "^4.1.0",
+    "lokijs": "^1.5.12",
+    "puppeteer": "^9.1.1",
+    "vt-pbf": "^3.1.1"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "nodemon": "^2.0.7",
+    "pkg": "5.1.0"
+  },
+  "bin": "index.js",
+  "pkg": {
+    "targets": [
+      "node14-win-x64"
+    ],
+    "assets": "views/**/*",
+    "outputPath": "dist"
+  }
+}

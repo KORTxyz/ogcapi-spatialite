@@ -1,0 +1,138 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            color: rgb(163, 163, 163);
+            padding: 0 10px 0 10px;
+            flex: 40px 0 0;
+            align-items: center;
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            letter-spacing: 0.025rem;
+        }
+
+        .breadcrumbs a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            color: rgb(62, 179, 166);
+        }
+
+        .breadcrumbs a:hover:after {
+            color: rgb(62, 179, 166);
+        }
+
+        .breadcrumbs a:after {
+            content: '>';
+            padding: 0 0.5rem;
+            display: inline-block;
+        }
+
+        .breadcrumbs span {
+            color: black;
+            cursor: pointer;
+            text-transform: capitalize;
+        }
+
+        .json {
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 0.025rem;
+            text-decoration: none;
+            color: rgb(163, 163, 163)
+        }
+
+        .json:hover {
+            color: rgb(62, 179, 166);
+
+        }
+    </style>
+    <style>
+        .content {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        @media only screen and (max-width: 1000px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <div class="breadcrumbs"><a href="../">Home</a><a href="./">TileMatrixSets</a><span>WebMercatorQuad</span>
+        </div>
+        <a class="json" href="?f=json">JSON</a>
+    </div>
+    <div class="content">
+        <div id='map' style='flex: 1'></div>
+    </div>
+    <script>
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: {
+                "version": 8,
+                "name": "WebMercatorQuad",
+                "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+                "sources": {
+                    "sat-tiles": {
+                        "type": "raster",
+                        "tiles": [
+                            "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2019_3857/default/g/{z}/{y}/{x}.jpg"
+                        ],
+                        "scheme": "xyz",
+                        "tileSize": 256
+                    },
+                },
+                "layers": [
+                    {
+                        "id": "sat-tiles",
+                        "type": "raster",
+                        "source": "sat-tiles",
+                        "paint": {
+                            "raster-saturation": -0.8
+                        }
+                    }
+
+                ]
+            },
+            maxZoom: 18,
+            hash: true
+
+        });
+        map.showTileBoundaries = true
+
+    </script>
+
+
+</body>
+
+</html>
