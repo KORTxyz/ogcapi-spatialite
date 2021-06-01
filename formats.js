@@ -143,8 +143,8 @@ module.exports = {
       "description": "",
       "extent": {
         "spatial": [
-          extent_min_y,
           extent_min_x,
+          extent_min_y,
           extent_max_x,
           extent_max_y
         ]
