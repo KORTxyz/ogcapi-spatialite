@@ -19,7 +19,7 @@ Data is a [Spatialite](https://www.gaia-gis.it/fossil/libspatialite/index) file 
 To get a local copy up and running follow these simple steps.
 
 ####  Run from the exe file 
-* get a copy on the realease from [relase](sdfsdf)
+* get a copy on the realease from [release](https://github.com/KORTxyz/ogcapi-spatialite/releases/download/0.1.3/0.1.3.zip)
 * Unpack to a folder
 * Create a .env file (or set the manually) containing:
 ```sh
