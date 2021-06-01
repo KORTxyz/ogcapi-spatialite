@@ -2,9 +2,8 @@
 
 ![](.readme/logo.png)
 # KORT XYZ 
-
 </div>
-<!-- ABOUT THE PROJECT -->
+
 ## About The Project
 POC made for  [OGCAPI codesprint 2021-05](https://github.com/opengeospatial/ogcapi-code-sprint-2021-05)
 Its an [Node.js®](https://nodejs.org/en/) implemention of the standards made using an [Fastify](https://www.fastify.io/)-based application that autogenerates the routes from a [OpenAPI](https://swagger.io/specification/) schema. 
