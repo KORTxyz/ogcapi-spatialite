@@ -103,7 +103,6 @@ module.exports = {
     puppeteer: async () => {
         const puppeteer = require('puppeteer');
         const path = require('path');
-        console.log(process.pkg, puppeteer.executablePath())
         const options = typeof process.pkg !== 'undefined' ?
             {
                 executablePath: puppeteer.executablePath().replace(/^.*?\\node_modules\\puppeteer\\\.local-chromium/, path.join(path.dirname(process.execPath), '.local-chromium'))
